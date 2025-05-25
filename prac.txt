@@ -1,0 +1,179 @@
+1)write the prog in scala using pattern matching taking natural number from the user and generating a sequence where: If the current term is even, the next term is the square of the current term. If the current term is odd, the next term is the cube of the current term.The sequence stops when the term exceeds a certain limit (e.g., 1000).Example:(exponentiationSequence 2) returns Output: 2, 4, 16, 256 (stops at 1000).
+
+object ExponentiationSequence {
+  
+  // Function to generate the sequence
+  def exponentiationSequence(n: Int, limit: Int = 1000): List[Int] = {
+    // Base case: if n exceeds the limit, stop the sequence
+    if (n > limit) Nil
+    else {
+      // Recursive case: apply the rules based on whether n is even or odd
+      n :: exponentiationSequence(
+        if (n % 2 == 0) n * n  // If even, square the number
+        else n * n * n,  // If odd, cube the number
+        limit
+      )
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    // Take input from the user
+    println("Enter a natural number to start the sequence:")
+    val input = scala.io.StdIn.readInt()
+    
+    // Generate the sequence
+    val sequence = exponentiationSequence(input)
+    
+    // Output the result
+    println(s"Exponentiation sequence: ${sequence.mkString(", ")}")
+  }
+}
+
+
+2).Write a program in scala using Pattern matching” and taking natural number from the user  and generates a sequence where: If the current term is divisible by 3, the next term is the square root of the current term (integer part only). If the current term is not divisible by 3, the next term is the current term multiplied by 2. The sequence stops when the term becomes less than or equal to 1.(transformationSequence 18) returns Output: [18, 4, 8, 16, 32] (stops when the term is ≤ 1).
+
+import math._
+
+object TransformationSequence {
+
+  // Function to generate the transformation sequence
+  def transformationSequence(n: Int): List[Int] = {
+    // Base case: stop if the term becomes <= 1
+    if (n <= 1) List(n)
+    else {
+      // Recursive case: apply the rules based on divisibility by 3
+      n :: (if (n % 3 == 0) {
+        // If divisible by 3, take the integer part of the square root
+        transformationSequence(sqrt(n).toInt)
+      } else {
+        // If not divisible by 3, multiply by 2
+        transformationSequence(n * 2)
+      })
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    // Take input from the user
+    println("Enter a natural number to start the sequence:")
+    val input = scala.io.StdIn.readInt()
+    
+    // Generate the sequence
+    val sequence = transformationSequence(input)
+    
+    // Output the result
+    println(s"Transformation sequence: ${sequence.mkString(", ")}")
+  }
+}
+
+
+3)Write a recursive scala program longestConsecutive that takes a list of integers and returns the longest sublist of consecutive integers in the list. The elements of the sublist must be in increasing order. Example: longestConsecutive [1, 3, 5, 4, 2, 6] -- Output: [1, 2, 3, 4, 5, 6] longestConsecutive [1, 2, 1, 2, 3] -- Output: [1, 2, 3] 
+
+
+object LongestConsecutive {
+
+  // Main function to find the longest sublist of consecutive integers
+  def longestConsecutive(xs: List[Int]): List[Int] = {
+    longestGroup(groupConsecutives(xs.sorted.distinct))
+  }
+
+  // Group the list into sublists of consecutive numbers
+  def groupConsecutives(xs: List[Int]): List[List[Int]] = {
+    xs match {
+      case Nil => Nil
+      case x :: xsTail => groupHelper(List(x), xsTail)
+    }
+  }
+
+  // Helper function to build groups of consecutive numbers
+  def groupHelper(current: List[Int], xs: List[Int]): List[List[Int]] = {
+    xs match {
+      case Nil => List(current)
+      case y :: ys =>
+        if (y == current.last + 1) {
+          groupHelper(current :+ y, ys)
+        } else {
+          current :: groupHelper(List(y), ys)
+        }
+    }
+  }
+
+  // Find the longest group
+  def longestGroup(groups: List[List[Int]]): List[Int] = {
+    groups match {
+      case Nil => Nil
+      case x :: Nil => x
+      case x :: y :: xs =>
+        if (x.length >= y.length) longestGroup(x :: xs)
+        else longestGroup(y :: xs)
+    }
+  }
+
+  // Main program to run
+  def main(args: Array[String]): Unit = {
+    println("Enter a list of integers separated by spaces:")
+    val input = scala.io.StdIn.readLine()
+    val numbers = input.split(" ").map(_.toInt).toList
+    val result = longestConsecutive(numbers)
+    println(s"The longest sublist of consecutive integers is: $result")
+  }
+}
+
+
+4)Write a recursivescala program longestConsecutiveDescending that takes a list of integers and returns the longest sublist of consecutive integers in descending order. The elements of the sublist must decrease by 1 at each step. [10] [CO3-BTL3-DL2] 
+
+Example: longestConsecutiveDescending([6, 4, 5, 3, 2, 1]) → Output: [6, 5, 4, 3, 2, 1], 
+ longestConsecutiveDescending([5, 4, 6, 7, 3]) → Output: [5, 4, 3]
+
+
+object LongestConsecutiveDescending {
+
+  // Main function to find the longest sublist of consecutive integers in descending order
+  def longestConsecutiveDescending(xs: List[Int]): List[Int] = {
+    // Sort the list in descending order and remove duplicates
+    longestGroup(groupConsecutives(xs.sorted.reverse.distinct))
+  }
+
+  // Group the list into sublists of consecutive numbers in descending order
+  def groupConsecutives(xs: List[Int]): List[List[Int]] = {
+    xs match {
+      case Nil => Nil
+      case x :: xsTail => groupHelper(List(x), xsTail)
+    }
+  }
+
+  // Helper function to build groups of consecutive numbers in descending order
+  def groupHelper(current: List[Int], xs: List[Int]): List[List[Int]] = {
+    xs match {
+      case Nil => List(current)
+      case y :: ys =>
+        // If y is 1 less than the last element of the current group, it belongs in the group
+        if (y == current.head - 1) {
+          groupHelper(y :: current, ys)
+        } else {
+          current :: groupHelper(List(y), ys)  // Start a new group
+        }
+    }
+  }
+
+  // Find the longest group
+  def longestGroup(groups: List[List[Int]]): List[Int] = {
+    groups match {
+      case Nil => Nil
+      case x :: Nil => x
+      case x :: y :: xs =>
+        if (x.length >= y.length) longestGroup(x :: xs)
+        else longestGroup(y :: xs)
+    }
+  }
+
+  // Main program to run
+  def main(args: Array[String]): Unit = {
+    println("Enter a list of integers separated by spaces:")
+    val input = scala.io.StdIn.readLine()
+    val numbers = input.split(" ").map(_.toInt).toList
+    val result = longestConsecutiveDescending(numbers)
+    println(s"The longest sublist of consecutive integers in descending order is: $result")
+  }
+}
+
+

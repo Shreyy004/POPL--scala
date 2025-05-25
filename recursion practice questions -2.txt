@@ -1,0 +1,229 @@
+1. Duplicate the elements of a list. If the original list is [1,2,3,4], the result should be [1,1,2,2,3,3,4,4]
+2. Modify Q1 solution such that you give two lists, the elements of second list needs to be repeated that many times as the first list's corresponding entry. For example, let the first list be [2,3,2] and the second list is [10, 11, 12]. The resulting list should be [10,10, 11,11,11, 12,12]
+3. Drop every N'th element from a list.
+4.Split a list into two parts; the length of the first part is given.
+5. Create a list containing all integers within a given range. If the range is between 5 and 9, the output should be [5,6,7,8,9]
+6. Write a function to check whether a number is prime. If 3 is given, it should return "Yes". If 6 is given, it should return "No"
+7. Write a function to return the positive factors of a positive integer as a list.
+8. Write a function that takes a list of Strings and returns the smallest string.
+smallestString ["apple", "banana", "cherry", "date"]
+
+
+1)
+
+object DuplicateListElements {
+  def duplicate(l: List[Int]): List[Int] = {
+    l.flatMap(x => List(x, x)) // For each element x, add it twice to the new list
+  }
+
+  def main(args: Array[String]): Unit = {
+    // Read the list from the user input
+    println("Enter the number of elements:")
+    val n = scala.io.StdIn.readInt()  // Read number of elements
+    println(s"Enter $n elements separated by spaces:")
+    val input = scala.io.StdIn.readLine().split(" ")  // Read input as a string
+    val nums = input.take(n).map(_.toInt).toList  // Convert to list of integers
+
+    // Duplicate the list elements
+    val duplicatedList = duplicate(nums)
+
+    // Print the duplicated list
+    println(s"Duplicated list: $duplicatedList")
+  }
+}
+
+2)
+object DuplicateBasedOnFirstList {
+  def duplicateWithCountRec(list1: List[Int], list2: List[Int]): List[Int] = {
+    (list1, list2) match {
+      case (Nil, _) => Nil  // Base case: if first list is empty, return empty list
+      case (_, Nil) => Nil  // Base case: if second list is empty, return empty list
+      case (x :: xs, y :: ys) =>
+        // Repeat 'y' 'x' times and process the rest recursively
+        List.fill(x)(y) ++ duplicateWithCountRec(xs, ys)
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    // Read the first list from user input
+    println("Enter the number of elements for the first list:")
+    val n1 = scala.io.StdIn.readInt()  // Read number of elements for the first list
+    println(s"Enter $n1 elements for the first list separated by spaces:")
+    val list1 = scala.io.StdIn.readLine().split(" ").take(n1).map(_.toInt).toList  // List 1 (counts)
+
+    // Read the second list from user input
+    println("Enter the number of elements for the second list:")
+    val n2 = scala.io.StdIn.readInt()  // Read number of elements for the second list
+    println(s"Enter $n2 elements for the second list separated by spaces:")
+    val list2 = scala.io.StdIn.readLine().split(" ").take(n2).map(_.toInt).toList  // List 2 (values)
+
+    // Ensure both lists have the same size
+    if (list1.length != list2.length) {
+      println("The two lists must have the same length.")
+    } else {
+      // Generate the resulting list using recursion
+      val result = duplicateWithCountRec(list1, list2)
+
+      // Print the resulting list
+      println(s"Resulting list: $result")
+    }
+  }
+}
+
+
+3)
+
+object DropEveryNthElement {
+  def dropEveryNth[A](n: Int, list: List[A], index: Int = 1): List[A] = {
+    list match {
+      case Nil => Nil  // Base case: if the list is empty, return an empty list
+      case x :: xs =>
+        if (index % n == 0) {
+          // If the current index is a multiple of N, drop the element
+          dropEveryNth(n, xs, index + 1)
+        } else {
+          // Otherwise, keep the element and continue with the rest of the list
+          x :: dropEveryNth(n, xs, index + 1)
+        }
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Enter the number of elements:")
+    val n = scala.io.StdIn.readInt()  // Read the number of element in the list
+
+    println(s"Enter $n elements separated by spaces:")
+    val input = scala.io.StdIn.readLine().split(" ")  // Read the list input
+    val list = input.take(n).map(_.toInt).toList  // Convert to a list of integers
+
+    println("Enter N (the N'th element to be dropped):")
+    val dropN = scala.io.StdIn.readInt()  // Read N
+
+    // Call the function to drop every N'th element
+    val result = dropEveryNth(dropN, list)
+
+    // Print the result
+    println(s"List after dropping every $dropN'th element: $result")
+  }
+}
+
+
+4)
+
+object SplitList {
+  // The splitList function is generalized to handle any type (numbers or strings)
+  def splitList[A](n: Int, list: List[A]): (List[A], List[A]) = {
+    if (n <= 0) (Nil, list)  // If n is 0 or negative, return empty first part and entire list as second part
+    else list match {
+      case Nil => (Nil, Nil)  // If the list is empty, return two empty lists
+      case x :: xs => 
+        val (firstPart, secondPart) = splitList(n - 1, xs)  // Recurse with the reduced n
+        (x :: firstPart, secondPart)  // Add the current element to the first part and pass the rest as second part
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Enter the number of elements:")
+    val n = scala.io.StdIn.readInt()  // Read the number of elements in the list
+
+    println(s"Enter $n elements separated by spaces:")
+    val input = scala.io.StdIn.readLine().split(" ")  // Read the list input
+
+    // Check if the input is numbers or strings using the provided logic
+    if (input.forall(_.forall(_.isDigit))) {  
+      // If the input consists only of digits, process it as a list of integers
+      val list = input.take(n).map(_.toInt).toList
+
+      println("Enter the length of the first part:")
+      val length = scala.io.StdIn.readInt()  // Read the length of the first part
+
+      // Call the function to split the list
+      val (firstPart, secondPart) = splitList(length, list)
+
+      // Print the result in the desired format
+      println(s"($firstPart, $secondPart)")
+    } else {
+      // If the input contains non-numeric values, treat it as a list of strings
+      val list = input.take(n).toList
+
+      println("Enter the length of the first part:")
+      val length = scala.io.StdIn.readInt()  // Read the length of the first part
+
+      // Call the function to split the list
+      val (firstPart, secondPart) = splitList(length, list)
+
+      // Print the result in the desired format
+      println(s"($firstPart, $secondPart)")
+    }
+  }
+}
+
+
+5)
+object RangeList {
+  def generateRange(start: Int, end: Int): List[Int] = {
+    (start to end).toList  // Generates a range from start to end (inclusive) and converts it to a list
+  }
+
+  def main(args: Array[String]): Unit = {
+    // Reading the range input from the user
+    println("Enter the starting number:")
+    val start = scala.io.StdIn.readInt()  // Start of the range
+
+    println("Enter the ending number:")
+    val end = scala.io.StdIn.readInt()  // End of the range
+
+    // Generate the range list
+    val rangeList = generateRange(start, end)
+
+    // Print the result
+    println(s"Generated range list: $rangeList")
+  }
+}
+
+
+7)
+object FactorFinder {
+  // Function to return the positive factors of a number as a list
+  def factors(n: Int): List[Int] = {
+    // Check if the number is greater than 0
+    if (n <= 0) throw new IllegalArgumentException("Input must be a positive integer.")
+    
+    // Generate the list of factors
+    (1 to n).filter(n % _ == 0).toList
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Enter a positive integer:")
+    val num = scala.io.StdIn.readInt()  // Read the integer from the user
+    
+    // Get the factors of the number and print them
+    println(s"Factors of $num: ${factors(num)}")
+  }
+}
+
+9)
+object SmallestStringFinder {
+
+  // Function to find the smallest string in a list
+  def smallestString(strings: List[String]): String = strings match {
+    case Nil => throw new IllegalArgumentException("The list is empty")  // Handle empty list
+    case x :: Nil => x  // If there's only one element, it's the smallest
+    case x :: xs => findSmallest(x, xs)  // Call helper function with the first element and the rest of the list
+  }
+
+  // Helper function to find the smallest string
+  def findSmallest(smallest: String, strings: List[String]): String = strings match {
+    case Nil => smallest  // If the list is empty, return the smallest found so far
+    case x :: xs =>
+      // Compare the current string with the smallest found so far and recurse
+      if (x < smallest) findSmallest(x, xs)
+      else findSmallest(smallest, xs)
+  }
+
+  def main(args: Array[String]): Unit = {
+    val strings = List("apple", "banana", "cherry", "date")  // Sample list of strings
+    println(s"Smallest string: ${smallestString(strings)}")
+  }
+}
+

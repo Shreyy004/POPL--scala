@@ -1,0 +1,216 @@
+1. Find the last element of a list.
+2. Find the last-but-one (or second-last) element of a list.
+3. Find the K'th element of a list.
+4.Find the number of elements in a list.
+5. Reverse a list.
+6. Find out whether a list is a palindrome. [1,2,3] should return False, whereas [1,2,3,2,1] should return True. The code should also handle strings. An empty list is considered a Palindrome.
+7. Eliminate consecutive duplicates. "aaaabccaadeeee" should become "abcade"
+8. Pack consecutive duplicates of list elements into sublists. "aaaabccaadeeee" should become ["aaaa","b","cc","aa","d","eeee"]
+9. Do a run-length encoding for a String with continuous repreating characters. "aaaabccaadeeee" should become [('a',4), ('b',1), ('c',2), ('a',2), ('d',1), ('e',4)]
+10. Decode a run-length encoded list.
+
+
+ANSWERS:
+
+1)
+
+object lastelem{
+  def lastele(l:List[Int]):Int={
+    l match{
+      case Nil=>Nil
+      case x::Nil=>x
+      case _::tail=>lastele(tail)
+    }
+  }
+  def main(args:Array[String])={
+    var n=scala.io.StdIn.readInt()
+    var nums=scala.io.StdIn.readLine().split(" ").take(n).map(_.toInt).toList
+    println(lastele(nums))    
+  }
+}
+
+
+2)
+
+object lastelem{
+  def lastele(l:List[Int]):Int={
+    l match{
+      case Nil=>throw new NoSuchElementException("List is empty")
+      case x::y::Nil=>x
+      case _::tail=>lastele(tail)
+    }
+  }
+  def main(args:Array[String])={
+    var n=scala.io.StdIn.readInt()
+    var nums=scala.io.StdIn.readLine().split(" ").take(n).map(_.toInt).toList
+    println(lastele(nums))    
+  }
+}
+
+3)
+
+object kelem{
+  def kele(l:List[Int],k:Int):Int={
+    l match{
+      case Nil=>throw new NoSuchElementException("List is empty")
+      case x::_ if k==0 =>x
+      case _::tail=>kele(tail,k-1)
+    }
+  }
+  def main(args:Array[String])={
+    var n=scala.io.StdIn.readInt()
+    var nums=scala.io.StdIn.readLine().split(" ").take(n).map(_.toInt).toList
+    var k=scala.io.StdIn.readInt()
+
+    println(kele(nums,k))    
+  }
+}
+
+
+4)
+
+object nelem{
+  def nele(l:List[Int]):Int={
+    l match{
+      case Nil=>0
+      case x::Nil =>1
+      case _::tail=>1+nele(tail)
+    }
+  }
+  def main(args:Array[String])={
+    var n=scala.io.StdIn.readInt()
+    var nums=scala.io.StdIn.readLine().split(" ").take(n).map(_.toInt).toList
+
+    println(nele(nums))    
+  }
+}
+
+5)
+
+object rever{
+  def rev(l:List[Int]):List[Int]={
+    l match{
+      case Nil=>Nil
+      case x::Nil =>x::Nil
+      case x::tail=>rev(tail):+x
+    }
+  }
+  def main(args:Array[String])={
+    var n=scala.io.StdIn.readInt()
+    var nums=scala.io.StdIn.readLine().split(" ").take(n).map(_.toInt).toList
+
+    println(rev(nums))    
+  }
+}
+
+6)
+
+object rever {
+  def rev[A](l: List[A]): Boolean = {
+    l == l.reverse  // Compare the list with its reverse
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Enter the number of elements:")
+    val n = scala.io.StdIn.readInt()  // Read number of elements
+    println(s"Enter $n elements separated by spaces:")
+    val input = scala.io.StdIn.readLine().split(" ")  // Read input as a string
+    val nums = input.take(n).toList  // Create a list from the input
+
+    // Try to handle both integers and strings
+    if (nums.forall(_.forall(_.isDigit))) {  // If all elements are digits
+      val intList = nums.map(_.toInt)  // Convert to integers
+      println(s"Is palindrome (numbers): ${rev(intList)}")
+    } else {
+      println(s"Is palindrome (strings): ${rev(nums)}")
+    }
+  }
+}
+
+
+7)
+
+object elim {
+  def eli[A](l: List[A]): List[A] = {
+    l match{
+    case Nil=>Nil
+    case x::Nil=>List(x)
+    case x::y::tail =>if (x==y) {
+                      eli(y::tail)
+                      }
+                      else{
+                        x::eli(y::tail)
+                      }
+                      
+      } 
+}
+  def main(args: Array[String]): Unit = {
+    println("Enter the number of elements:")
+    val n = scala.io.StdIn.readInt()  // Read number of elements
+    println(s"Enter $n elements separated by spaces:")
+    val input = scala.io.StdIn.readLine().split(" ")  // Read input as a string
+    val nums = input.take(n).toList  // Create a list from the input
+
+    // Try to handle both integers and strings
+    if (nums.forall(_.forall(_.isDigit))) {  // If all elements are digits
+      val intList = nums.map(_.toInt)  // Convert to integers
+      println(s"after removing duplicates: ${eli(intList)}")
+    } else {
+      println(s"after removing duplicates: ${eli(nums)}")
+  }
+}
+}
+
+8)
+
+object elim {
+  def pack[A](l: List[A]): List[List[A]] = {
+    l match {
+      case Nil => Nil 
+      case x :: xs => 
+        val (packed, rest) = xs.span(_ == x)  
+        (x :: packed) :: pack(rest) 
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("Enter the number of elements:")
+    val n = scala.io.StdIn.readInt()  
+    println(s"Enter $n elements separated by spaces:")
+    val input = scala.io.StdIn.readLine().split(" ")  
+    val nums = input.take(n).toList  
+
+    if (nums.forall(_.forall(_.isDigit))) { 
+      val intList = nums.map(_.toInt)  
+      println(s"After packing duplicates: ${pack(intList)}")
+    } else {
+      println(s"After packing duplicates: ${pack(nums)}")
+    }
+  }
+}
+
+
+9)
+object RunLengthEncoding {
+  def encode(s: String): List[(Char, Int)] = {
+    s.toList match {
+      case Nil => Nil  // If the string is empty, return an empty list.
+      case x :: xs => 
+        val (packed, rest) = xs.span(_ == x)  // span finds consecutive duplicates of x
+        (x, packed.length + 1) :: encode(rest.mkString)  // (x, count) and recurse on the rest of the string
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    // Get input from the user
+    println("Enter a string:")
+    val input = scala.io.StdIn.readLine()  
+
+    // Apply run-length encoding
+    val result = encode(input)
+
+    // Print the result
+    println(s"Run-length encoding result: $result")
+  }
+}
+
